@@ -1,2 +1,359 @@
-# Jogo-Fam-lia-Kass-kia
-Adoração em Família
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#17324d" />
+  <title>Missão Família — cada um no seu aparelho</title>
+  <style>
+    :root{
+      --navy:#17324d; --blue:#2f6d9e; --sky:#eaf4fb; --gold:#d8a838;
+      --ink:#1f2933; --muted:#607080; --paper:#ffffff; --green:#2f7d58;
+      --red:#a54242; --shadow:0 14px 35px rgba(16,42,67,.16);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:
+      radial-gradient(circle at 10% 0%,rgba(216,168,56,.16),transparent 28%),
+      linear-gradient(145deg,#eef6fb 0%,#f9fbfd 54%,#eef4f8 100%)}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    a{color:var(--blue)}
+    .app{max-width:1100px;margin:auto;padding:18px 18px 44px}
+    .topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;padding:10px 0;background:linear-gradient(180deg,rgba(245,250,253,.98),rgba(245,250,253,.86),transparent)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .brand-mark{width:48px;height:48px;border-radius:16px;background:linear-gradient(145deg,var(--navy),var(--blue));display:grid;place-items:center;color:white;font-weight:900;font-size:23px;box-shadow:var(--shadow)}
+    .brand h1{font-size:clamp(19px,3vw,28px);margin:0;color:var(--navy);line-height:1.05}
+    .brand small{display:block;color:var(--muted);margin-top:4px}
+    .hud{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .pill{background:white;border:1px solid #d7e4ec;border-radius:999px;padding:8px 12px;font-weight:800;box-shadow:0 5px 16px rgba(16,42,67,.07)}
+    .pill span{color:var(--blue)}
+    .screen{display:none;animation:fade .35s ease}.screen.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:stretch;margin-top:12px}
+    .panel{background:rgba(255,255,255,.94);border:1px solid rgba(199,218,230,.85);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .hero-copy{padding:clamp(24px,5vw,52px)}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;background:#eef6fb;border:1px solid #cde2ef;color:var(--blue);border-radius:999px;padding:7px 11px;font-weight:850;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+    .hero h2{font-size:clamp(34px,6vw,64px);line-height:.98;margin:18px 0 14px;color:var(--navy);letter-spacing:-.035em}
+    .hero p{font-size:clamp(17px,2vw,20px);line-height:1.55;color:#435466}
+    .hero-media{min-height:420px;position:relative;background:#cfe2ee}
+    .hero-media img{width:100%;height:100%;object-fit:cover;display:block}
+    .hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(10,35,55,.78))}
+    .photo-note{position:absolute;z-index:2;left:18px;right:18px;bottom:16px;color:white;font-size:13px}
+    .setup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:22px}
+    .field label{display:block;font-size:13px;font-weight:850;color:var(--navy);margin-bottom:7px}
+    .field input,.field select,.field textarea{width:100%;border:1px solid #bfd2df;border-radius:14px;background:#fbfdff;padding:13px 14px;outline:none;transition:.2s}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,109,158,.12)}
+    .wide{grid-column:1/-1}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .btn{border:0;border-radius:14px;padding:13px 18px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .12s ease,filter .2s}
+    .btn:hover{filter:brightness(1.04)}.btn:active{transform:translateY(1px)}
+    .primary{background:linear-gradient(145deg,var(--navy),var(--blue));color:white;box-shadow:0 10px 22px rgba(23,50,77,.2)}
+    .secondary{background:#edf5fa;color:var(--navy);border:1px solid #c8deea}
+    .gold{background:linear-gradient(145deg,#c18d1e,var(--gold));color:#1f2933}
+    .ghost{background:white;color:var(--navy);border:1px solid #ccdce6}
+    .instructions{margin-top:20px;padding:16px 18px;border-left:5px solid var(--gold);background:#fffaf0;border-radius:0 15px 15px 0;color:#4d4534}.sync-note{margin-top:12px;padding:14px 16px;border-radius:15px;background:#eef7f2;border:1px solid #b7d9c7;line-height:1.5}.sync-note code{font-weight:900;color:var(--navy);font-size:1.05em}.role-note{margin-top:9px;color:#4b5e70;font-size:14px;line-height:1.45}
+    .game-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:20px;margin-top:14px}
+    .challenge{overflow:hidden}
+    .challenge-image{height:250px;position:relative;background:#dceaf2}
+    .challenge-image img{width:100%;height:100%;object-fit:cover}
+    .challenge-image:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(12,38,57,.72))}
+    .round-badge{position:absolute;z-index:2;left:18px;bottom:16px;color:white;font-weight:900;background:rgba(23,50,77,.78);backdrop-filter:blur(5px);padding:8px 12px;border-radius:999px}
+    .challenge-body{padding:24px}
+    .category{font-weight:900;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+    .challenge h2{font-size:clamp(25px,4vw,38px);line-height:1.06;margin:8px 0 12px;color:var(--navy)}
+    .scenario{font-size:18px;line-height:1.55;background:#f4f8fb;border-radius:16px;padding:16px;border:1px solid #dbe8ef}
+    .turn{display:inline-flex;margin:15px 0 4px;padding:8px 11px;border-radius:10px;background:#fff6dd;color:#674b09;font-weight:900}
+    .answers{display:grid;gap:10px;margin-top:15px}
+    .answer{border:1px solid #cbdce7;background:white;border-radius:15px;padding:14px;text-align:left;display:flex;gap:12px;align-items:flex-start;color:var(--ink)}
+    .answer:hover{border-color:var(--blue);background:#f4f9fc}.answer.selected{border:2px solid var(--gold);background:#fff9e8;box-shadow:0 0 0 4px rgba(216,168,56,.13)}
+    .answer .letter{min-width:32px;height:32px;border-radius:10px;background:#e7f1f7;color:var(--navy);font-weight:950;display:grid;place-items:center}
+    .answer.correct{border-color:#8cc8aa;background:#eef9f3}.answer.wrong{border-color:#dfaaaa;background:#fff4f4}
+    .feedback{display:none;margin-top:16px;padding:18px;border-radius:16px;background:#eef7f2;border:1px solid #b7d9c7}
+    .feedback.show{display:block}.feedback h3{margin:0 0 8px;color:var(--green)}
+    .feedback p{line-height:1.55;margin:7px 0}
+    .reflection{margin-top:12px;background:white;border:1px dashed #9ab8c8;border-radius:14px;padding:13px}
+    .fun-card{margin-top:12px;background:linear-gradient(135deg,#fff8e7,#eef7f2);border:1px solid #e4cf8b;border-radius:16px;padding:15px;position:relative;overflow:hidden}
+    .fun-card:before{content:"⚡";position:absolute;right:12px;top:8px;font-size:28px;opacity:.24}
+    .fun-card b{color:#6d4e08}.fun-card span{display:block;margin-top:5px;line-height:1.5}
+    .bonus{display:inline-flex;margin-top:9px;padding:6px 9px;border-radius:999px;background:#e7f4ec;color:var(--green);font-weight:900;font-size:12px}
+    .source-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+    .source-actions a{display:inline-flex;text-decoration:none;border:1px solid #bed2de;padding:8px 10px;border-radius:11px;background:white;font-weight:800;font-size:13px}
+    .sidebar{display:grid;gap:14px;align-content:start}
+    .sidecard{padding:18px}
+    .sidecard h3{margin:0 0 12px;color:var(--navy)}
+    .meter{margin:12px 0}.meter-head{display:flex;justify-content:space-between;font-weight:800;font-size:14px;margin-bottom:6px}.bar{height:11px;border-radius:999px;background:#e5edf2;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),#6aa7cb);transition:.45s}
+    .team-list{display:grid;gap:8px}.team-person{display:flex;align-items:center;justify-content:space-between;background:#f3f7fa;border-radius:11px;padding:10px 11px;font-weight:850}
+    .tiny{font-size:12px;color:var(--muted);line-height:1.45}
+    .timer-big{font-size:34px;font-weight:950;color:var(--navy);letter-spacing:.02em}
+    .finish{padding:clamp(22px,4vw,42px)}
+    .finish h2{font-size:clamp(30px,5vw,52px);margin:0;color:var(--navy)}
+    .score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0}
+    .scorebox{background:#f4f8fb;border:1px solid #d4e3ec;border-radius:16px;padding:16px;text-align:center}
+    .scorebox b{display:block;font-size:30px;color:var(--blue)}
+    .commitments{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .summary-note{background:#fff8e7;border:1px solid #ead495;padding:16px;border-radius:15px;margin:18px 0}
+    .footer{margin-top:26px;text-align:center;color:#647685;font-size:12px;line-height:1.5}
+    .confetti{font-size:38px}
+    @media(max-width:830px){
+      .hero,.game-layout{grid-template-columns:1fr}.hero-media{min-height:300px;order:-1}.sidebar{grid-template-columns:1fr 1fr}.topbar{position:static}.hud{justify-content:flex-start}.score-grid{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:560px){
+      .app{padding:10px 10px 32px}.setup,.commitments,.sidebar{grid-template-columns:1fr}.hero-copy,.challenge-body{padding:20px}.hero-media{min-height:245px}.brand small{display:none}.pill{padding:7px 9px;font-size:13px}.challenge-image{height:210px}.btn{width:100%}
+    }
+    @media print{
+      body{background:white}.topbar,.btnrow,.answers,.source-actions,#gameScreen{display:none!important}.screen{display:none!important}#finishScreen{display:block!important}.panel{box-shadow:none;border:1px solid #bbb}.footer{color:#333}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">MF</div><div><h1>Missão Família</h1><small>Fortes com Jeová — modo individual em cada aparelho</small></div></div>
+    <div class="hud" id="hud" style="display:none">
+      <div class="pill">Ronda <span id="hudRound">1</span>/<span id="hudTotal">6</span></div>
+      <div class="pill">Tempo <span id="hudTime">40:00</span></div><div class="pill">Sessão <span id="hudSession">FAMILIA-ZUA</span></div>
+    </div>
+  </header>
+
+  <section id="startScreen" class="screen active">
+    <div class="hero">
+      <div class="panel hero-copy">
+        <span class="eyebrow">30–50 minutos · um aparelho por pessoa</span>
+        <h2>Juntos na missão.<br>Cada um no seu aparelho.</h2>
+        <p>Todos recebem os mesmos desafios na mesma ordem, mas cada pessoa escolhe e revela a sua resposta no próprio telemóvel, tablet ou computador.</p>
+        <div class="setup">
+          <div class="field"><label for="player">Quem és?</label><select id="player"><option>Pedro</option><option>Gerson</option><option selected>Kassékia</option><option>Feleciana</option><option>Simão</option><option>Mateus</option><option>Samuel</option></select></div>
+          <div class="field"><label for="duration">Duração — deve ser igual em todos</label><select id="duration"><option value="30">30 minutos — 5 desafios</option><option value="40" selected>40 minutos — 7 desafios</option><option value="50">50 minutos — 9 desafios</option></select></div>
+          <div class="field wide"><label for="familyCode">Código da sessão — escrevam exatamente o mesmo em todos os aparelhos</label><input id="familyCode" value="FAMILIA-ZUA" maxlength="30" autocomplete="off"></div>
+        </div>
+        <div class="btnrow"><button class="btn primary" id="startBtn">Entrar na missão ▶</button></div>
+        <div class="sync-note"><b>Preparação em 3 passos:</b> enviem este mesmo ficheiro a Pedro, Gerson, Kassékia, Feleciana, Simão, Mateus e Samuel; cada um abre no navegador e escolhe o próprio nome; todos mantêm o código <code>FAMILIA-ZUA</code> e a mesma duração. Assim, as rondas ficam iguais em todos os aparelhos.</div>
+        <div class="instructions"><b>Como jogar:</b> façam uma oração breve. Em cada ronda, todos escolhem a resposta em silêncio. Quando todos disserem “pronto”, contam 3–2–1 e cada um toca em <b>Revelar a minha resposta</b>. Depois conversam, cumprem as missões pessoais e avançam juntos para a ronda seguinte.</div>
+      </div>
+      <div class="panel hero-media">
+        <img src="https://cms-imgp.jw-cdn.org/img/p/2014205/univ/art/2014205_univ_sqr_xl.jpg" alt="Família a participar numa atividade de adoração em família" onerror="this.src='https://cms-imgp.jw-cdn.org/img/p/1011258/univ/art/1011258_univ_sqr_xl.jpg'">
+        <div class="photo-note">Imagem oficial associada a conteúdo do JW.org sobre adoração em família.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gameScreen" class="screen">
+    <div class="game-layout">
+      <main class="panel challenge">
+        <div class="challenge-image"><img id="cardImage" alt="Imagem temática"><div class="round-badge" id="roundBadge">Desafio 1</div></div>
+        <div class="challenge-body">
+          <div class="category" id="category"></div>
+          <h2 id="cardTitle"></h2>
+          <div class="scenario" id="scenario"></div>
+          <div class="turn" id="turnLabel"></div>
+          <div class="answers" id="answers"></div>
+          <div class="btnrow"><button class="btn gold" id="revealBtn" disabled>Revelar a minha resposta</button></div>
+          <div class="role-note">Não revelem antes de todos escolherem. Depois contem juntos: 3, 2, 1.</div>
+          <div class="feedback" id="feedback">
+            <h3 id="feedbackTitle"></h3>
+            <p id="feedbackText"></p>
+            <p><b>Princípio bíblico:</b> <span id="scripture"></span></p>
+            <div class="reflection"><b>Conversem por 60–90 segundos:</b><br><span id="reflection"></span></div>
+            <div class="fun-card"><b>Desafio-relâmpago divertido</b><span id="funTask"></span><button class="btn ghost" id="funDoneBtn" style="margin-top:10px;padding:9px 12px">Cumpri a minha missão: +1 União</button><div class="bonus" id="funBonus" style="display:none">Bónus conquistado ✓</div></div>
+            <div class="source-actions" id="sourceActions"></div>
+            <div class="btnrow"><button class="btn primary" id="nextBtn">Próximo desafio →</button></div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="sidebar">
+        <div class="panel sidecard"><h3>Tempo da família</h3><div class="timer-big" id="timerBig">40:00</div><div class="btnrow"><button class="btn secondary" id="pauseBtn">Pausar</button></div><p class="tiny">O temporizador é apenas uma ajuda. Podem conversar mais quando o assunto for importante.</p></div>
+        <div class="panel sidecard"><h3>As minhas forças</h3>
+          <div class="meter"><div class="meter-head"><span>Fé</span><b id="faithNum">0</b></div><div class="bar"><div class="fill" id="faithBar"></div></div></div>
+          <div class="meter"><div class="meter-head"><span>Coragem</span><b id="courageNum">0</b></div><div class="bar"><div class="fill" id="courageBar"></div></div></div>
+          <div class="meter"><div class="meter-head"><span>Paz</span><b id="peaceNum">0</b></div><div class="bar"><div class="fill" id="peaceBar"></div></div></div>
+          <div class="meter"><div class="meter-head"><span>União</span><b id="unityNum">0</b></div><div class="bar"><div class="fill" id="unityBar"></div></div></div>
+        </div>
+        <div class="panel sidecard"><h3>Participantes da sessão</h3><div class="team-list" id="teamList"></div><p class="tiny">A missão pessoal muda a cada ronda: responder primeiro, ler um texto, dar um exemplo, fazer uma pergunta bondosa ou resumir a decisão.</p></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="finishScreen" class="screen">
+    <div class="panel finish">
+      <div class="confetti">🌿✨</div>
+      <h2>Missão concluída!</h2>
+      <p id="finishLead" style="font-size:19px;line-height:1.5;color:#4b5e70"></p>
+      <div class="score-grid">
+        <div class="scorebox"><b id="fFaith">0</b>Fé</div><div class="scorebox"><b id="fCourage">0</b>Coragem</div><div class="scorebox"><b id="fPeace">0</b>Paz</div><div class="scorebox"><b id="fUnity">0</b>União</div>
+      </div>
+      <div class="summary-note"><b>Fecho espiritual (3–5 min):</b> cada um diga uma coisa que aprendeu e uma coisa pela qual quer agradecer a Jeová. Depois, façam uma oração final simples e específica.</div>
+      <h3 style="color:var(--navy)">O meu plano de 7 dias</h3>
+      <div class="commitments" id="commitments"></div>
+      <div class="btnrow"><button class="btn gold" onclick="window.print()">Imprimir / guardar resumo</button><button class="btn secondary" id="restartBtn">Jogar novamente</button></div>
+      <div class="footer">Atividade familiar em aparelhos independentes, baseada em princípios bíblicos e em conteúdos públicos do JW.org. Não é uma publicação oficial. As imagens são carregadas diretamente do domínio oficial de imagens do JW.org e pertencem aos respetivos titulares.</div>
+    </div>
+  </section>
+</div>
+
+<script>
+const IMG={
+ family:'https://cms-imgp.jw-cdn.org/img/p/2014205/univ/art/2014205_univ_sqr_xl.jpg',
+ project:'https://cms-imgp.jw-cdn.org/img/p/1011258/univ/art/1011258_univ_sqr_xl.jpg',
+ anxiety:'https://cms-imgp.jw-cdn.org/img/p/502015134/univ/art/502015134_univ_sqr_xl.jpg',
+ prayer:'https://cms-imgp.jw-cdn.org/img/p/2023005/univ/art/2023005_univ_sqr_xl.jpg'
+};
+const challenges=[
+ {cat:'Saúde emocional',title:'Quando a ansiedade toma conta',img:IMG.anxiety,
+  scenario:'Amanhã tens uma apresentação importante. Já te preparaste, mas a tua mente repete tudo o que pode correr mal e não consegues descansar. Qual é a reação mais equilibrada?',
+  answers:['Ficar acordado a imaginar todos os resultados possíveis.','Preparar o que ainda é possível, falar com alguém de confiança, orar e concentrar-te apenas no dia de hoje.','Não fazer nada e fingir que o problema não existe.'],correct:1,
+  feedback:'A ansiedade é útil quando leva a uma ação sensata. Depois disso, continuar a alimentar cenários negativos aumenta o peso. Preparação, conversa, oração e um dia de cada vez formam uma resposta equilibrada.',
+  scripture:'Mateus 6:34; Provérbios 12:25; 1 Pedro 5:7.',
+  reflection:'Que preocupação concreta podes transformar hoje numa ação pequena? O que deve ser entregue a Jeová em oração?',
+  gains:{faith:2,peace:3,courage:1,unity:1},
+  links:[['Como controlar a ansiedade?','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/controlar-a-ansiedade/'],['Vale a pena orar?','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/vale-a-pena-orar/']]},
+ {cat:'Autocontrolo',title:'Provocação: responder ou parar?',img:IMG.project,
+  scenario:'Alguém faz um comentário injusto sobre ti diante de outras pessoas. Sentes a raiva a subir. O que mostra mais força?',
+  answers:['Responder imediatamente com palavras ainda mais duras.','Fazer uma pausa, baixar o tom e conversar depois, quando conseguires pensar com clareza.','Publicar uma indireta nas redes sociais para a pessoa perceber.'],correct:1,
+  feedback:'Autocontrolo não é fraqueza. A pausa impede que uma emoção momentânea controle palavras que podem ferir relações e reputação.',
+  scripture:'Tiago 1:19; Provérbios 15:1; Provérbios 14:29.',
+  reflection:'Qual é o sinal no teu corpo que mostra que estás a perder a calma? Que frase podes usar para pedir uma pausa?',
+  gains:{faith:1,peace:2,courage:2,unity:1},
+  links:[['Como controlar a minha fúria?','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/controlar-minha-furia/']]},
+ {cat:'Pressão dos colegas',title:'Ser firme sem ser agressivo',img:IMG.family,
+  scenario:'Um grupo insiste para fazeres algo que vai contra a tua consciência. Dizem: “Toda a gente faz isso.” Qual é a melhor preparação?',
+  answers:['Decidir antecipadamente os teus limites, ensaiar uma resposta curta e afastar-te se a pressão continuar.','Aceitar desta vez para não parecer diferente.','Fazer escondido e não contar a ninguém.'],correct:0,
+  feedback:'Decisões tomadas antes da pressão são mais fáceis de defender. Uma resposta simples, calma e firme reduz a possibilidade de seres arrastado pelo grupo.',
+  scripture:'Provérbios 13:20; 1 Coríntios 15:33; Romanos 12:21.',
+  reflection:'Completa esta frase em voz alta: “Não vou fazer isso porque…”. Faz a resposta respeitosa e com menos de dez segundos.',
+  gains:{faith:2,peace:1,courage:3,unity:1},
+  links:[['Como resistir às tentações?','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/como-posso-resistir-a-tentacoes/']]},
+ {cat:'Tecnologia e emoções',title:'Quem controla o ecrã?',img:IMG.anxiety,
+  scenario:'Depois de muito tempo nas redes sociais, ficas mais cansado, comparas a tua vida com a dos outros e adias coisas importantes. Qual é a medida mais sensata?',
+  answers:['Continuar, mas tentar não sentir nada.','Definir um limite, fazer pausas e evitar o dispositivo antes de dormir.','Responder a todas as notificações para não perder nada.'],correct:1,
+  feedback:'O equilíbrio exige limites concretos. Uma pausa pode proteger o tempo, o sono, a concentração e as emoções.',
+  scripture:'Gálatas 6:4; Efésios 5:15, 16; Filipenses 1:10.',
+  reflection:'Qual limite realista podes testar durante sete dias? Em que horário o telemóvel deve ficar longe?',
+  gains:{faith:1,peace:3,courage:2,unity:1},
+  links:[['Como é que as redes sociais me estão a afetar?','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/como-as-redes-sociais-me-estao-afetar/']]},
+ {cat:'Rotina espiritual',title:'Quando falta vontade',img:IMG.family,
+  scenario:'Chega o dia da reunião, mas estás cansado e sem vontade. O que pode ajudar a transformar a experiência?',
+  answers:['Ir apenas quando estiveres muito motivado.','Preparar um pequeno ponto, procurar uma resposta específica e pensar em alguém que podes encorajar.','Ir, mas passar a maior parte do tempo no telemóvel.'],correct:1,
+  feedback:'A motivação muitas vezes aumenta depois de começarmos. Uma preparação pequena e um objetivo claro tornam a reunião mais pessoal e útil.',
+  scripture:'Hebreus 10:24, 25; Filipenses 1:10.',
+  reflection:'Que parte da próxima reunião podes preparar? Quem na congregação poderia ficar feliz com o teu encorajamento?',
+  gains:{faith:3,peace:1,courage:1,unity:2},
+  links:[['Porquê ir às reuniões no Salão do Reino?','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/reunioes-no-salao-do-reino/']]},
+ {cat:'Comunicação familiar',title:'Uma regra que parece injusta',img:IMG.project,
+  scenario:'Uma regra em casa parece injusta ou pouco clara. Qual é a melhor maneira de procurar uma solução?',
+  answers:['Discutir no momento de maior irritação.','Escolher uma hora calma, explicar como te sentes, ouvir a razão da regra e propor uma experiência com responsabilidade.','Desobedecer em segredo para provar que a regra não faz sentido.'],correct:1,
+  feedback:'Uma conversa calma não garante que tudo mude, mas aumenta a confiança e permite que cada lado compreenda melhor o outro.',
+  scripture:'Tiago 1:19; Provérbios 15:1; Efésios 4:25.',
+  reflection:'Cada participante diga uma coisa que gostaria que a família entendesse melhor. Outra pessoa repete o que ouviu antes de responder.',
+  gains:{faith:1,peace:2,courage:2,unity:3},
+  links:[['Como conversar com os meus pais sobre regras','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/conversar-com-pais-sobre-regras/'],['Como dar-me bem com os meus pais','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/dar-me-bem-com-meus-pais/']]},
+ {cat:'Oração',title:'Uma oração mais verdadeira',img:IMG.prayer,
+  scenario:'Percebes que as tuas orações estão sempre iguais e muito rápidas. Qual exercício pode ajudar?',
+  answers:['Parar de orar até voltares a sentir vontade.','Antes de orar, pensar em uma preocupação, uma pessoa e três motivos de gratidão.','Usar palavras difíceis para a oração parecer mais espiritual.'],correct:1,
+  feedback:'A oração é comunicação real. Ser específico, sincero e agradecido pode fortalecer a amizade com Jeová.',
+  scripture:'Filipenses 4:6; Salmo 55:22; Tiago 4:8.',
+  reflection:'Sem revelar algo íntimo, cada um diga um assunto que gostaria de incluir mais vezes nas suas orações.',
+  gains:{faith:3,peace:3,courage:1,unity:1},
+  links:[['Vale a pena orar?','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/vale-a-pena-orar/'],['Oração e ansiedade','https://www.jw.org/pt-pt/biblioteca/revistas/sentinela-no1-%E2%81%A02023/oracao-ajuda-saude-mental/']]},
+ {cat:'Amizade',title:'Ser o amigo que alguém precisa',img:IMG.family,
+  scenario:'Um jovem da congregação anda isolado e parece desanimado. O que seria mais amoroso?',
+  answers:['Esperar que ele peça ajuda primeiro.','Falar com ele, escutar sem julgar, incluí-lo numa atividade e continuar a demonstrar interesse.','Dizer-lhe que precisa simplesmente de ser mais forte.'],correct:1,
+  feedback:'Uma boa palavra e presença constante podem aliviar um coração sobrecarregado. Escutar vem antes de dar muitas soluções.',
+  scripture:'Provérbios 17:17; Provérbios 12:25; Romanos 12:15.',
+  reflection:'Quem poderia receber uma mensagem de encorajamento desta família ainda esta semana?',
+  gains:{faith:2,peace:2,courage:1,unity:3},
+  links:[['Porque é que eu não tenho amigos?','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/nao-ter-amigos-sentir-sozinho/'],['Como melhorar conversas cara a cara','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/perguntam/como-melhorar-as-minhas-conversas-cara-a-cara/']]},
+ {cat:'Metas espirituais',title:'Pequenos passos, progresso real',img:IMG.project,
+  scenario:'Queres melhorar a leitura da Bíblia, as reuniões ou a pregação, mas o alvo parece grande demais. Qual estratégia funciona melhor?',
+  answers:['Esperar por uma semana em que tenhas muita motivação.','Escolher um passo pequeno, marcar dia e hora, acompanhar durante sete dias e pedir apoio.','Tentar mudar tudo ao mesmo tempo.'],correct:1,
+  feedback:'Metas pequenas e específicas são mais fáceis de iniciar e repetir. O progresso regular vale mais do que um começo muito intenso que dura pouco.',
+  scripture:'Efésios 5:15, 16; Filipenses 1:10; Provérbios 21:5.',
+  reflection:'Cada um formule um alvo espiritual de sete dias com: ação, dia, hora e apoio necessário.',
+  gains:{faith:3,peace:1,courage:2,unity:2},
+  links:[['Ajuda e conselhos bíblicos para os jovens','https://www.jw.org/pt-pt/ensinos-biblicos/adolescentes/'],['Ideias para adoração em família','https://www.jw.org/pt/biblioteca/revistas/w20140315/adoracao-em-familia/']]}
+];
+const funTasks=[
+  'Representação de 30 segundos: duas pessoas encenam a reação impulsiva e depois a reação guiada pelo princípio bíblico. A família escolhe a versão mais pacífica.',
+  'Pesquisa-relâmpago: todos procuram um dos textos indicados. A primeira pessoa a encontrá-lo lê; outra explica o princípio em uma frase.',
+  'Palavra de força: cada pessoa diz uma qualidade espiritual que vê na pessoa à sua direita.',
+  'Resposta em dez segundos: quem começou a ronda resume a melhor decisão usando no máximo dez palavras.',
+  'Troca de perspetiva: uma pessoa explica como o outro talvez se sinta; depois pergunta: “Foi isso que quiseste dizer?”',
+  'Sem palavras: alguém representa a emoção do cenário apenas com gestos. Os outros identificam a emoção e sugerem uma reação bíblica.',
+  'Escudo espiritual: juntos criem uma frase curta para lembrar durante a semana, baseada num dos textos desta ronda.',
+  'Dupla de encorajamento: em pares, cada um completa: “Quando estiveres a enfrentar isto, podes contar comigo para…”',
+  'Final inesperado: inventem um final positivo para o cenário em que a boa decisão fortalece a amizade com Jeová e a união da família.'
+];
+const PLAYERS=['Pedro','Gerson','Kassékia','Feleciana','Simão','Mateus','Samuel'];
+const roleTasks=[
+  'Responde primeiro e explica a razão em uma frase.',
+  'Depois da resposta, lê um dos textos bíblicos indicados.',
+  'Dá um exemplo prático de como aplicar o princípio esta semana.',
+  'Faz uma pergunta bondosa para ajudar a família a conversar.',
+  'No fim, resume a decisão espiritual da ronda em até dez palavras.',
+  'Escolhe uma qualidade cristã relacionada com a ronda e explica como demonstrá-la esta semana.',
+  'Escolhe um ponto da ronda que mais te ajudou e diz como ele fortalece a amizade com Jeová.'
+];
+let state={player:'',players:PLAYERS,roleIndex:0,familyCode:'FAMILIA-ZUA',selected:[],index:0,scores:{faith:0,courage:0,peace:0,unity:0},seconds:2400,timer:null,paused:false,answered:false,funDone:false,choice:null};
+const $=id=>document.getElementById(id);
+function hashString(str){let h=2166136261>>>0;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function seededRandom(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296}}
+function seededShuffle(a,key){const out=[...a],rand=seededRandom(hashString(key));for(let i=out.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[out[i],out[j]]=[out[j],out[i]]}return out}
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active')}
+function fmt(s){s=Math.max(0,s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function updateTimer(){ $('hudTime').textContent=fmt(state.seconds);$('timerBig').textContent=fmt(state.seconds); if(state.seconds<=0){clearInterval(state.timer);state.timer=null;$('timerBig').textContent='Tempo cumprido';return} state.seconds--; }
+function updateMeters(){
+  const max=state.selected.length*3;
+  for(const k of ['faith','courage','peace','unity']){$(k+'Num').textContent=state.scores[k];$(k+'Bar').style.width=Math.min(100,(state.scores[k]/max)*100)+'%'}
+}
+function start(){
+  const duration=+$('duration').value; const count=duration===30?5:duration===40?7:9;
+  state.player=$('player').value;state.roleIndex=PLAYERS.indexOf(state.player);
+  state.familyCode=($('familyCode').value.trim()||'FAMILIA-ZUA').toUpperCase().replace(/\s+/g,'-');$('familyCode').value=state.familyCode;
+  state.selected=seededShuffle(challenges,`${state.familyCode}-${duration}`).slice(0,count);state.index=0;state.scores={faith:0,courage:0,peace:0,unity:0};state.seconds=duration*60;state.answered=false;state.choice=null;
+  $('hud').style.display='flex';$('hudTotal').textContent=count;$('hudSession').textContent=state.familyCode;
+  $('teamList').innerHTML=PLAYERS.map(p=>`<div class="team-person"><span>${p}</span><span>${p===state.player?'este aparelho':'●'}</span></div>`).join('');
+  clearInterval(state.timer);state.timer=setInterval(updateTimer,1000);updateTimer();updateMeters();show('gameScreen');renderCard();
+}
+function renderCard(){
+  state.answered=false;state.funDone=false;state.choice=null;const c=state.selected[state.index];
+  $('hudRound').textContent=state.index+1;$('roundBadge').textContent=`Desafio ${state.index+1} de ${state.selected.length}`;$('category').textContent=c.cat;$('cardTitle').textContent=c.title;$('scenario').textContent=c.scenario;
+  const firstIndex=state.index%PLAYERS.length;const roleOffset=(state.roleIndex-firstIndex+PLAYERS.length)%PLAYERS.length;
+  $('turnLabel').textContent=`${state.player}, a tua missão: ${roleTasks[roleOffset]}`;
+  const img=$('cardImage');img.src=c.img;img.onerror=()=>{img.src=IMG.family};
+  $('feedback').classList.remove('show');$('answers').innerHTML='';$('revealBtn').disabled=true;$('revealBtn').textContent='Revelar a minha resposta';
+  $('funDoneBtn').disabled=false;$('funDoneBtn').textContent='Cumpri a minha missão: +1 União';$('funBonus').style.display='none';
+  c.answers.forEach((a,i)=>{const b=document.createElement('button');b.className='answer';b.innerHTML=`<span class="letter">${String.fromCharCode(65+i)}</span><span>${a}</span>`;b.onclick=()=>selectAnswer(i,b);$('answers').appendChild(b)});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function selectAnswer(i,btn){
+  if(state.answered)return;state.choice=i;[...$('answers').children].forEach(b=>b.classList.remove('selected'));btn.classList.add('selected');$('revealBtn').disabled=false;
+}
+function revealAnswer(){
+  if(state.answered||state.choice===null)return;state.answered=true;const c=state.selected[state.index];const i=state.choice;
+  [...$('answers').children].forEach((b,j)=>{b.disabled=true;b.classList.remove('selected');if(j===c.correct)b.classList.add('correct');else if(j===i)b.classList.add('wrong')});
+  $('revealBtn').disabled=true;$('revealBtn').textContent='Resposta revelada';
+  if(i===c.correct){$('feedbackTitle').textContent='Boa escolha — princípio aplicado';for(const k in c.gains)state.scores[k]+=c.gains[k]}
+  else{$('feedbackTitle').textContent='Aprendemos juntos';state.scores.unity+=1}
+  $('feedbackText').textContent=c.feedback;$('scripture').textContent=c.scripture;$('reflection').textContent=c.reflection;
+  $('funTask').textContent=funTasks[state.index%funTasks.length];
+  $('sourceActions').innerHTML=c.links.map(x=>`<a href="${x[1]}" target="_blank" rel="noopener">Abrir no JW.org: ${x[0]} ↗</a>`).join('');
+  $('nextBtn').textContent=state.index===state.selected.length-1?'Ver o meu resultado →':'Avançar com a família →';$('feedback').classList.add('show');updateMeters();
+  setTimeout(()=>$('feedback').scrollIntoView({behavior:'smooth',block:'nearest'}),150);
+}
+function completeFun(){
+  if(!state.answered||state.funDone)return;state.funDone=true;state.scores.unity+=1;updateMeters();
+  $('funDoneBtn').disabled=true;$('funDoneBtn').textContent='Missão pessoal concluída';$('funBonus').style.display='inline-flex';
+}
+function next(){if(!state.answered)return;if(state.index<state.selected.length-1){state.index++;renderCard()}else finish()}
+function finish(){clearInterval(state.timer);state.timer=null;$('hud').style.display='none';
+  $('fFaith').textContent=state.scores.faith;$('fCourage').textContent=state.scores.courage;$('fPeace').textContent=state.scores.peace;$('fUnity').textContent=state.scores.unity;
+  $('finishLead').textContent=`${state.player}, concluíste ${state.selected.length} desafios da sessão ${state.familyCode}. Agora partilha com a família a ideia que mais te fortaleceu.`;
+  $('commitments').innerHTML=`<div class="field wide"><label for="commit0">Compromisso de ${state.player}</label><textarea id="commit0" rows="4" placeholder="Uma ação espiritual simples, específica e possível para os próximos 7 dias."></textarea></div>`;
+  show('finishScreen');window.scrollTo({top:0,behavior:'smooth'})}
+$('startBtn').onclick=start;$('revealBtn').onclick=revealAnswer;$('nextBtn').onclick=next;$('funDoneBtn').onclick=completeFun;
+$('pauseBtn').onclick=()=>{state.paused=!state.paused;if(state.paused){clearInterval(state.timer);state.timer=null;$('pauseBtn').textContent='Continuar'}else{state.timer=setInterval(updateTimer,1000);$('pauseBtn').textContent='Pausar'}};
+$('restartBtn').onclick=()=>{clearInterval(state.timer);state.timer=null;$('hud').style.display='none';show('startScreen');window.scrollTo({top:0,behavior:'smooth'})};
+</script>
+</body>
+</html>
